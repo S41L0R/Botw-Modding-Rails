@@ -26,6 +26,10 @@ NextDistanceArray = []
 # Set up CurrentPoint. This keeps track of what point you're editing in the GUI.
 CurrentPoint = 0
 
+#Set up window position
+WindowX = 587
+WindowY = 152
+
 def CoreCalculation():
     #Grab all the needed variables
     global X
@@ -87,90 +91,6 @@ def CoreCalculation():
     clipboard.copy(FinalString)
     print(FinalString)
 
-"""
-# GUI
-main = Tk()
-main.title("RailGen")
-main.geometry("500x500")
-
-rows = 0
-
-while rows < 50:
-    main.rowconfigure(rows, weight=1)
-    main.columnconfigure(rows, weight=1)
-    rows += 1
-TabControl = ttk.Notebook(main)
-TabControl.grid(row = 1, column = 0, columnspan = 40, rowspan = 39, sticky = "NESW")
-Settings = ttk.Notebook(main)
-Settings.grid(row = 1, column = 40, columnspan = 10, rowspan = 49, sticky = "NESW")
-
-
-
-CurrentTabCount = 0
-XEntry = []
-YEntry = []
-ZEntry = []
-#XCurrentEntry = ttk.Entry()
-#YCurrentEntry = ttk.Entry()
-#ZCurrentEntry = ttk.Entry()
-
-
-
-
-def AddTab():
-    global CurrentTabCount
-    global XEntry
-    global YEntry
-    global ZEntry
-    NewTab = ttk.Frame(TabControl)
-    TabControl.add(NewTab)
-    XCurrentEntry = ttk.Entry(NewTab, text = "X").pack()
-    YCurrentEntry = ttk.Entry(NewTab, text = "Y").pack()
-    ZCurrentEntry = ttk.Entry(NewTab, text = "Z").pack()
-    XEntry.append(XCurrentEntry.get())
-    YEntry.append(YCurrentEntry.get())
-    ZEntry.append(ZCurrentEntry.get())
-    def Save():
-        global XEntry
-        global YEntry
-        global ZEntry
-        global X
-        global Y
-        global Z
-        global XCurrentEntry
-        global YCurrentEntry
-        global ZCurrentEntry
-        XEntry[CurrentTabCount] = XCurrentEntry.get()
-        YEntry[CurrentTabCount] = YCurrentEntry.get()
-        ZEntry[CurrentTabCount] = ZCurrentEntry.get()
-
-    print(CurrentTabCount)
-    CurrentTabCount = CurrentTabCount + 1
-    ttk.Button(NewTab, text = "Save", command = Save).pack()
-    #def Save():
-        #X.append(XEntry.get())
-        #Y.append(YEntry.get())
-        #Z.append(ZEntry.get())
-        #print(X)
-    #ttk.Button(NewTab, text="Save", command = Save).pack()
-
-    #XEntry = ttk.Entry(NewTab, text = "X")
-    #XEntry.pack()
-
-
-Checkbutton(Settings, text = "IsClosed", variable = IsClosed).grid(row = 0, sticky = "W")
-Button(Settings, text = "Add new tab", command = AddTab).grid(row = 1, sticky = "W")
-
-
-
-#X1 = ttk.Entry(point1, text = "text")
-#X1.pack()
-
-
-
-main.mainloop()
-"""
-
 
 
 import sys
@@ -226,7 +146,12 @@ def NextPoint():
     global X
     global Y
     global Z
+    global WindowX
+    global WindowY
     global HashID
+    # This isn't needed for some reason.
+    global root
+
     print(CurrentPoint + 1)
     X[CurrentPoint] = int(top.XEntry.get())
     Y[CurrentPoint] = int(top.YEntry.get())
@@ -237,6 +162,8 @@ def NextPoint():
     if (CurrentPoint < len(X)-1):
         CurrentPoint = CurrentPoint + 1
     HashID = top.HashIDEntry.get()
+    WindowX = root.winfo_x()
+    WindowY = root.winfo_y()
     top = Toplevel1 (root)
 
 
@@ -246,7 +173,11 @@ def PrevPoint():
     global X
     global Y
     global Z
+    global WindowX
+    global WindowY
     global HashID
+    # This isn't needed for some reason.
+    global root
 
     print(CurrentPoint + 1)
     X[CurrentPoint] = int(top.XEntry.get())
@@ -258,6 +189,8 @@ def PrevPoint():
     if (CurrentPoint > 0):
         CurrentPoint = CurrentPoint - 1
     HashID = top.HashIDEntry.get()
+    WindowX = root.winfo_x()
+    WindowY = root.winfo_y()
     top = Toplevel1 (root)
 
 def AddPoint():
@@ -273,12 +206,19 @@ def RemovePoint():
     global Y
     global Z
     global CurrentPoint
+    global WindowX
+    global WindowY
+    # This isn't needed for some reason.
+    global root
+
     if len(X) > 2:
         if CurrentPoint >= len(X)-1:
             CurrentPoint = len(X)-2
         X.pop()
         Y.pop()
         Z.pop()
+    WindowX = root.winfo_x()
+    WindowY = root.winfo_y()
     top = Toplevel1 (root)
 
 
@@ -291,6 +231,8 @@ class Toplevel1:
         global Y
         global Z
         global HashID
+        global WindowX
+        global WindowY
 
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
@@ -306,7 +248,7 @@ class Toplevel1:
         self.style.map('.',background=
             [('selected', _compcolor), ('active',_ana2color)])
 
-        top.geometry("600x450+587+152")
+        top.geometry("600x450+"+str(WindowX)+"+"+str(WindowY))
         top.minsize(120, 1)
         top.maxsize(1684, 1031)
         top.resizable(1, 1)
