@@ -18,3 +18,5 @@ as well as the path of the file you want to edit.
 
 NOTE: When the "Insert Rail" button is clicked, a backup of the original map file is saved into the "backup" folder in Botw Rails' root directory.
 
+#Important!
+Make sure to set the path to which you want to start at when selecting the file you want to edit. You can do this by editing DefaultPath.txt.
