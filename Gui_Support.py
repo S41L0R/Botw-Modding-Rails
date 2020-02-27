@@ -26,4 +26,4 @@ def destroy_window():
 
 if __name__ == '__main__':
     import first
-    first.vp_start_gui()
+    Rails.vp_start_gui()

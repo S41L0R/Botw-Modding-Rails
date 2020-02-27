@@ -1,6 +1,7 @@
 # Import libraries
 import clipboard
 import math
+import oead
 #from tkinter import *
 #from tkinter import ttk
 
@@ -26,9 +27,41 @@ NextDistanceArray = []
 # Set up CurrentPoint. This keeps track of what point you're editing in the GUI.
 CurrentPoint = 0
 
+#Set up FilePath
+FilePath = ""
+
+
 #Set up window position
 WindowX = 587
 WindowY = 152
+def WriteToFile(InputText):
+    InputBytes = oead.byml.from_text(InputText)
+    BYML = oead.byml.to_binary(InputBytes, True, 2)
+    Yaz0 = oead.yaz0.compress(BYML)
+    with open(FilePath, "wb") as OutputFile:
+        WrittenOutputFile = OutputFile.write(Yaz0)
+def InsertRail(Input, RailString):
+    if (Input.find("Rails: []") == -1):
+        OutputText = Input + "\n" + RailString
+    else:
+        OutputText = Input + "Rails:" + "\n" + RailString
+
+    print(OutputText)
+    #clipboard.copy(OutputText)
+    print(RailString)
+    WriteToFile(OutputText)
+def ReadFromFile(RailString):
+    #FilePath = top.PathEntry.get()
+    with open(FilePath, 'rb') as InputFile:
+        ReadInputFile = InputFile.read()
+        DeYaz0 = oead.yaz0.decompress(ReadInputFile)
+        DeBYML = oead.byml.from_binary(DeYaz0)
+        Output = oead.byml.to_text(DeBYML)
+
+        InsertRail(Output, RailString)
+        with open("backup/backup.smubin", 'wb') as BackupFile:
+            BackupFile.write(ReadInputFile)
+
 
 def CoreCalculation():
     #Grab all the needed variables
@@ -42,6 +75,10 @@ def CoreCalculation():
     global NextDistanceIndex
     global NextDistanceArray
     global CurrentPoint
+    global FilePath
+
+    with open("FilePath.txt", "r") as Path:
+        FilePath = Path.read()
 
     X[CurrentPoint] = int(top.XEntry.get())
     Y[CurrentPoint] = int(top.YEntry.get())
@@ -56,6 +93,8 @@ def CoreCalculation():
     HashID = top.HashIDEntry.get()
     #Set IsClosed
     IsClosed = top.IsClosedDropdown.get()
+    #Set RailType
+    RailType = top.RailTypeDropdown.get()
     # Set NextDistanceIndex
     while NextDistanceIndexCounter < len(X)-1:
         NextDistanceIndex.append(NextDistanceIndexCounter)
@@ -77,7 +116,7 @@ def CoreCalculation():
     Translate[2] = ZSum/len(Z)
 
     # Create one-time initial string + first point string
-    InitString = ("- HashId: !u " + HashID + "\n" + "IsClosed: " + str(IsClosed) + "\n" + "RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(-1) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+    InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(-1) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     PrevDistance = str(NextDistanceArray[0])
 
     # Create repeatable main body string
@@ -90,6 +129,7 @@ def CoreCalculation():
     FinalString = (InitString + BodyString + EndString)
     clipboard.copy(FinalString)
     print(FinalString)
+    ReadFromFile(FinalString)
 
 
 
@@ -105,6 +145,7 @@ try:
     py3 = False
 except ImportError:
     import tkinter.ttk as ttk
+    from tkinter import filedialog
     py3 = True
 
 import Gui_Support
@@ -221,6 +262,14 @@ def RemovePoint():
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
 
+def EnterPath():
+    global FilePath
+
+    with open("FilePath.txt", "r") as Path:
+        FilePath = Path.read()
+    top.PathEntry = filedialog.askopenfilename(initialdir=FilePath, title="Select File to Modify")
+    #top.PathEntry.place(relx=0.225, rely=--0.65, relheight=0.047, relwidth=0.165)
+
 
 class Toplevel1:
     def __init__(self, top=None):
@@ -286,19 +335,19 @@ class Toplevel1:
         self.Button2.configure(text='''Next''')
 
         self.Button3 = tk.Button(top)
-        self.Button3.place(relx=0.600, rely=--0.77, height=100, width=100)
+        self.Button3.place(relx=0.600, rely=--0.55, height=100, width=100)
         self.Button3.configure(activebackground="#ececec")
         self.Button3.configure(activeforeground="#000000")
-        self.Button3.configure(background="#0000c7")
+        self.Button3.configure(background="#fca103")
         self.Button3.configure(borderwidth="5")
-        self.Button3.configure(command=CoreCalculation)
+        self.Button3.configure(command=EnterPath)
         self.Button3.configure(disabledforeground="#a3a3a3")
         self.Button3.configure(foreground="#000000")
         self.Button3.configure(highlightbackground="#d9d9d9")
         self.Button3.configure(highlightcolor="black")
         self.Button3.configure(pady="0")
         self.Button3.configure(relief="flat")
-        self.Button3.configure(text='''Copy to clipboard''')
+        self.Button3.configure(text='''Select File \n (to Modify)''')
 
         self.Button4 = tk.Button(top)
         self.Button4.place(relx=0.7750, rely=--0.7, height=135, width=135)
@@ -329,6 +378,22 @@ class Toplevel1:
         self.Button4.configure(pady="0")
         self.Button4.configure(relief="flat")
         self.Button4.configure(text='''Remove Point''')
+
+        self.Button5 = tk.Button(top)
+        self.Button5.place(relx=0.600, rely=--0.77, height=100, width=100)
+        self.Button5.configure(activebackground="#ececec")
+        self.Button5.configure(activeforeground="#000000")
+        self.Button5.configure(background="#0000c7")
+        self.Button5.configure(borderwidth="5")
+        self.Button5.configure(command=CoreCalculation)
+        self.Button5.configure(disabledforeground="#a3a3a3")
+        self.Button5.configure(foreground="#000000")
+        self.Button5.configure(highlightbackground="#d9d9d9")
+        self.Button5.configure(highlightcolor="black")
+        self.Button5.configure(pady="0")
+        self.Button5.configure(relief="flat")
+        self.Button5.configure(text='''Insert Rail''')
+
 
         self.XEntry = ttk.Entry(top)
         self.XEntry.place(relx=0.383, rely=0.356, relheight=0.047, relwidth=0.21)
@@ -361,6 +426,8 @@ class Toplevel1:
         self.HashIDEntry.configure(cursor="xterm")
 
         self.HashIDEntry.insert(0, HashID)
+
+
 
         self.CurrnetPointLabel = ttk.Label(top)
         self.CurrnetPointLabel.place(relx=0.45, rely=0.1, height=19, width=45)
