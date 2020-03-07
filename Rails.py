@@ -77,7 +77,7 @@ def CoreCalculation():
     global CurrentPoint
     global FilePath
 
-    with open("FilePath.txt", "r") as Path:
+    with open("DefaultPath.txt", "r") as Path:
         FilePath = Path.read()
 
     X[CurrentPoint] = int(top.XEntry.get())
@@ -265,7 +265,7 @@ def RemovePoint():
 def EnterPath():
     global FilePath
 
-    with open("FilePath.txt", "r") as Path:
+    with open("DefaultPath.txt", "r") as Path:
         FilePath = Path.read()
     top.PathEntry = filedialog.askopenfilename(initialdir=FilePath, title="Select File to Modify")
     #top.PathEntry.place(relx=0.225, rely=--0.65, relheight=0.047, relwidth=0.165)
