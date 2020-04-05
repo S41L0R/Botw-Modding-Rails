@@ -2,13 +2,15 @@
 import clipboard
 import math
 import oead
+import zlib
+import os
 #from tkinter import *
 #from tkinter import ttk
 
 # Set up points
-X = [1, 3, 2]
-Y = [1, 7, 15]
-Z = [1, 5, 4]
+X = [1.0, 3.0, 2.0]
+Y = [1.0, 7.0, 15.0]
+Z = [1.0, 5.0, 4.0]
 
 # Set up HashID
 HashID = "0x0"
@@ -27,8 +29,9 @@ NextDistanceArray = []
 # Set up CurrentPoint. This keeps track of what point you're editing in the GUI.
 CurrentPoint = 0
 
-#Set up FilePath
+#Set up paths
 FilePath = ""
+FolderPath = ""
 
 
 #Set up window position
@@ -46,21 +49,23 @@ def InsertRail(Input, RailString):
     else:
         OutputText = Input + "Rails:" + "\n" + RailString
 
-    print(OutputText)
+    #print(OutputText)
     #clipboard.copy(OutputText)
-    print(RailString)
+    #print(RailString)
     WriteToFile(OutputText)
-def ReadFromFile(RailString):
+def ReadFromFile(RailString, Continue, CurrentPath):
     #FilePath = top.PathEntry.get()
-    with open(FilePath, 'rb') as InputFile:
+    with open(CurrentPath, 'rb') as InputFile:
         ReadInputFile = InputFile.read()
         DeYaz0 = oead.yaz0.decompress(ReadInputFile)
         DeBYML = oead.byml.from_binary(DeYaz0)
         Output = oead.byml.to_text(DeBYML)
-
-        InsertRail(Output, RailString)
-        with open("backup/backup.smubin", 'wb') as BackupFile:
-            BackupFile.write(ReadInputFile)
+        if (Continue == True):
+            InsertRail(Output, RailString)
+            with open("backup/backup.smubin", 'wb') as BackupFile:
+                BackupFile.write(ReadInputFile)
+        elif (Continue == False):
+            return Output
 
 
 def CoreCalculation():
@@ -68,7 +73,7 @@ def CoreCalculation():
     global X
     global Y
     global Z
-    global HashId
+    global HashID
     global IsClosed
     global RailType
     global Translate
@@ -76,13 +81,49 @@ def CoreCalculation():
     global NextDistanceArray
     global CurrentPoint
     global FilePath
+    global FolderPath
 
+    #Read DefaultPath and save it as FilePath
     with open("DefaultPath.txt", "r") as Path:
-        FilePath = Path.read()
+        FolderPath = Path.read()
+    #Find new HashID
+    HighestHashID = 0
+    for i in os.listdir(FolderPath):
+        if os.path.isfile(os.path.join(FolderPath,i)) and 'Dynamic' in i:
+            FilePath = FolderPath + "//" + i
+    LineList = ReadFromFile(None, False, FilePath).splitlines()
+    HashIDReadCurrentLine = 0;
+    for line in LineList:
+        print("Line: " + line)
+        if ("- HashId" in line):
+            splitLine = line.split()
+            CurrentHashID = int(splitLine[3], 0)
+            if (CurrentHashID > HighestHashID):
+                HighestHashID = CurrentHashID
+        HashIDReadCurrentLine += 1;
 
-    X[CurrentPoint] = int(top.XEntry.get())
-    Y[CurrentPoint] = int(top.YEntry.get())
-    Z[CurrentPoint] = int(top.ZEntry.get())
+    for i in os.listdir(FolderPath):
+        if os.path.isfile(os.path.join(FolderPath,i)) and 'Static' in i:
+            FilePath = FolderPath + "//" + i
+    LineList = ReadFromFile(None, False, FilePath).splitlines()
+    HashIDReadCurrentLine = 0;
+    for line in LineList:
+        print("Line: " + line)
+        if ("- HashId" in line):
+            splitLine = line.split()
+            CurrentHashID = int(splitLine[3], 0)
+            if (CurrentHashID > HighestHashID):
+                HighestHashID = CurrentHashID
+        HashIDReadCurrentLine += 1;
+
+    print("HighestHashID: " + str(HighestHashID))
+    HashID = str(HighestHashID + 1)
+    print(HashID)
+
+
+    X[CurrentPoint] = float(top.XEntry.get())
+    Y[CurrentPoint] = float(top.YEntry.get())
+    Z[CurrentPoint] = float(top.ZEntry.get())
 
     NextDistanceIndexCounter = 0
     MidpointCounter = -1
@@ -90,7 +131,8 @@ def CoreCalculation():
     YSum = 0
     ZSum = 0
     # Set HashId
-    HashID = top.HashIDEntry.get()
+    if (top.HashIDEntry.get() != "Auto"):
+        HashID = top.HashIDEntry.get()
     #Set IsClosed
     IsClosed = top.IsClosedDropdown.get()
     #Set RailType
@@ -129,7 +171,7 @@ def CoreCalculation():
     FinalString = (InitString + BodyString + EndString)
     clipboard.copy(FinalString)
     print(FinalString)
-    ReadFromFile(FinalString)
+    ReadFromFile(FinalString, True, FilePath)
 
 
 
@@ -202,7 +244,8 @@ def NextPoint():
     print(Z)
     if (CurrentPoint < len(X)-1):
         CurrentPoint = CurrentPoint + 1
-    HashID = top.HashIDEntry.get()
+    if (top.HashIDEntry.get() != "Auto"):
+        HashID = top.HashIDEntry.get()
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -229,7 +272,8 @@ def PrevPoint():
     print(Z)
     if (CurrentPoint > 0):
         CurrentPoint = CurrentPoint - 1
-    HashID = top.HashIDEntry.get()
+    if (top.HashIDEntry.get() != "Auto"):
+        HashID = top.HashIDEntry.get()
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -347,7 +391,7 @@ class Toplevel1:
         self.Button3.configure(highlightcolor="black")
         self.Button3.configure(pady="0")
         self.Button3.configure(relief="flat")
-        self.Button3.configure(text='''Select File \n (to Modify)''')
+        self.Button3.configure(text='''Select Folder \n (to Modify)''')
 
         self.Button4 = tk.Button(top)
         self.Button4.place(relx=0.7750, rely=--0.7, height=135, width=135)
@@ -425,7 +469,7 @@ class Toplevel1:
         self.HashIDEntry.configure(takefocus="")
         self.HashIDEntry.configure(cursor="xterm")
 
-        self.HashIDEntry.insert(0, HashID)
+        self.HashIDEntry.insert(0, "Auto")
 
 
 
