@@ -117,7 +117,7 @@ def CoreCalculation():
         HashIDReadCurrentLine += 1;
 
     print("HighestHashID: " + str(HighestHashID))
-    HashID = str(HighestHashID + 1)
+    HashID = str(hex(HighestHashID + 1))
     print(HashID)
 
 
@@ -132,7 +132,7 @@ def CoreCalculation():
     ZSum = 0
     # Set HashId
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = top.HashIDEntry.get()
+        HashID = str(hex(top.HashIDEntry.get()))
     #Set IsClosed
     IsClosed = top.IsClosedDropdown.get()
     #Set RailType
@@ -236,16 +236,16 @@ def NextPoint():
     global root
 
     print(CurrentPoint + 1)
-    X[CurrentPoint] = int(top.XEntry.get())
-    Y[CurrentPoint] = int(top.YEntry.get())
-    Z[CurrentPoint] = int(top.ZEntry.get())
+    X[CurrentPoint] = float(top.XEntry.get())
+    Y[CurrentPoint] = float(top.YEntry.get())
+    Z[CurrentPoint] = float(top.ZEntry.get())
     print(X)
     print(Y)
     print(Z)
     if (CurrentPoint < len(X)-1):
         CurrentPoint = CurrentPoint + 1
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = top.HashIDEntry.get()
+        HashID = str(hex(top.HashIDEntry.get()))
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -264,16 +264,16 @@ def PrevPoint():
     global root
 
     print(CurrentPoint + 1)
-    X[CurrentPoint] = int(top.XEntry.get())
-    Y[CurrentPoint] = int(top.YEntry.get())
-    Z[CurrentPoint] = int(top.ZEntry.get())
+    X[CurrentPoint] = float(top.XEntry.get())
+    Y[CurrentPoint] = float(top.YEntry.get())
+    Z[CurrentPoint] = float(top.ZEntry.get())
     print(X)
     print(Y)
     print(Z)
     if (CurrentPoint > 0):
         CurrentPoint = CurrentPoint - 1
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = top.HashIDEntry.get()
+        HashID = str(hex(top.HashIDEntry.get()))
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
