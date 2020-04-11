@@ -1,11 +1,11 @@
 #BotW Rails
 
-##INSTALLATION
+## INSTALLATION
 -------------
 
 Just download the release from the releases tab or build from source and add an empty folder called "backup" in the program directory or the program will crash.
 
-###Building from source
+### Building from source
 --------------------
 Download the files from the master branch. Then run these commands:
 ```pip install tkinter``` - I don't remember if this comes with python, but try it just in case.
@@ -13,7 +13,7 @@ Download the files from the master branch. Then run these commands:
 ```pip install pyinstaller``` - This is so that you can build the program.
 ```pyinstaller --onefile --icon=Rails.ico --noconsole --name Rails Rails.py``` - This builds the program. It will put the final file inside a folder called "dist". If you want the console to show up and give you error messages and stuff, don't type the "--noconsole" bit.
 
-##Usage
+## Usage
 -------
 
 Hi! If you want to use this tool, here are some steps:
