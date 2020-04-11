@@ -32,6 +32,9 @@ as well as the path of the map folder you want to edit.
 
 5. Click "Insert Rail", and you're pretty much all set. All you have to do now is link it to your actor in Ice-Spear. (Via the HashId)
 
+### Extra Information
+----------------------
+
 NOTE: When the "Insert Rail" button is clicked, a backup of the original static map file is saved into the "backup" folder in Botw Rails' root directory.
 
 NOTE #2: The dynamic file is never edited, and is just read to find the new HashId. Don't rename the dynamic or static files. My program searches for the "Static" and "Dynamic" in the names at the end.
