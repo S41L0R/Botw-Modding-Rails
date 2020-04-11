@@ -8,10 +8,10 @@ Just download the release from the releases tab or build from source and add an 
 ### Building from source
 --------------------
 Download the files from the master branch. Then run these commands:
-```pip install tkinter``` - I don't remember if this comes with python, but try it just in case.
-```pip install oead``` - This is a tool for extracting byaml files.
-```pip install pyinstaller``` - This is so that you can build the program.
-```pyinstaller --onefile --icon=Rails.ico --noconsole --name Rails Rails.py``` - This builds the program. It will put the final file inside a folder called "dist". If you want the console to show up and give you error messages and stuff, don't type the "--noconsole" bit.
+- ```pip install tkinter``` - I don't remember if this comes with python, but try it just in case.
+- ```pip install oead``` - This is a tool for extracting byaml files.
+- ```pip install pyinstaller``` - This is so that you can build the program.
+- ```pyinstaller --onefile --icon=Rails.ico --noconsole --name Rails Rails.py``` - This builds the program. It will put the final file inside a folder called "dist". If you want the console to show up and give you error messages and stuff, don't type the "--noconsole" bit.
 
 ## Usage
 -------
