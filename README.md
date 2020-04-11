@@ -1,6 +1,6 @@
 #BotW Rails
 
-INSTALLATION -- just add an empty folder called "backup" in the program directory or the program will crash.
+INSTALLATION -- just download the release from the releases tab or build from source and add an empty folder called "backup" in the program directory or the program will crash.
 
 Hi! If you want to use this tool, here are some steps:
 
