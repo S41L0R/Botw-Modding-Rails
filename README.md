@@ -1,6 +1,6 @@
 #BotW Rails
 
-## INSTALLATION
+## Installation
 -------------
 
 Just download the release from the releases tab or build from source and add an empty folder called "backup" in the program directory or the program will crash.
