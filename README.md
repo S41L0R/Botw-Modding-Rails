@@ -46,4 +46,4 @@ Make a folder called "backup" in the same folder as the exe. This program will n
 TUTORIAL VIDEO COMING SOON!
 
 
-If there are any bugs, you can contact me at my discord, Greenlord#9262. I am on the botw modding hub if you want to ping me.
+If there are any bugs you can contact me at my discord, Greenlord#9262. I am on the botw modding hub if you want to ping me.
