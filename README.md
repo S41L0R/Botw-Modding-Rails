@@ -3,7 +3,7 @@
 ## Installation
 -------------
 
-Just download the release from the releases tab or build from source and add an empty folder called "backup" in the program directory or the program will crash.
+Just download the release from the releases tab on the github or build from source. Once you're done, make sure to add an empty folder called "backup" in the program directory or the program **will crash**.
 
 ### Building from source
 --------------------
