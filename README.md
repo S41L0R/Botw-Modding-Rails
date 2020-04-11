@@ -24,7 +24,7 @@ Hi! If you want to use this tool, here are some steps:
 
 2. Enter your first point into the boxes. 
 
-3. Clicking "New Point" will add a point to your rail. You can edit that point by clicking "Next".
+3. Clicking "New Point" will add a point to your rail. You can edit that point by navigating through the "Next Point" and "Previous Point" buttons.
 
 4. Once you're all done editing the points in your rail, make sure to specify the HashId you want your rail to have (As of 1.1, you can leave this on Auto), 
 its RailType (this is just the shape it will take), and its IsClosed value (This is just whether you want the last point to be connected to the first), 
