@@ -1,4 +1,4 @@
-#BotW Rails
+# BotW Rails
 
 ## Installation
 -------------
