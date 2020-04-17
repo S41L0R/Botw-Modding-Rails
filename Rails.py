@@ -84,8 +84,10 @@ def CoreCalculation():
     global FolderPath
 
     #Read DefaultPath and save it as FilePath
-    with open("DefaultPath.txt", "r") as Path:
-        FolderPath = Path.read()
+    FolderPath = top.PathEntry
+    if (FolderPath == ""):
+        with open("DefaultPath.txt", "r") as Path:
+            FolderPath = Path.read()
     #Find new HashID
     HighestHashID = 0
     for i in os.listdir(FolderPath):
@@ -307,11 +309,12 @@ def RemovePoint():
     top = Toplevel1 (root)
 
 def EnterPath():
-    global FilePath
+    global FolderPath
 
     with open("DefaultPath.txt", "r") as Path:
-        FilePath = Path.read()
-    top.PathEntry = filedialog.askopenfilename(initialdir=FilePath, title="Select File to Modify")
+        FolderPath = Path.read()
+    #top.PathEntry = filedialog.askopenfilename(initialdir=FilePath, title="Select File to Modify")
+    top.PathEntry = filedialog.askdirectory()
     #top.PathEntry.place(relx=0.225, rely=--0.65, relheight=0.047, relwidth=0.165)
 
 
