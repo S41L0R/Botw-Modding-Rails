@@ -9,6 +9,7 @@ Just download the release from the releases tab on the github or build from sour
 --------------------
 Download the files from the master branch. Then run these commands:
 - ```pip install oead``` - This is a tool for extracting byaml files.
+- ```pip install clipboard``` - This is for copying stuff to the clipboard. Current builds automatically copy the rail to buffer.
 - ```pip install https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz``` - This is so that you can build the program (YOU NEED THE DEV BUILD - DO NOT SIMPLY ```pip install pyinstaller```.).
 - ```pyinstaller --onefile --icon=Rails.ico --noconsole --name Rails Rails.py``` - This builds the program. It will put the final file inside a folder called "dist". If you want the console to show up and give you error messages and stuff, don't type the "--noconsole" bit.
 
