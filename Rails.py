@@ -13,10 +13,10 @@ Y = [1.0, 7.0, 15.0]
 Z = [1.0, 5.0, 4.0]
 
 # Set up HashID
-HashID = "0x0"
+HashID = "Auto"
 
 # Set up other preferences
-IsClosed = "false"
+IsClosed = "true"
 RailType = "Bezier"
 Translate = [100, 50, 25]
 
@@ -83,6 +83,8 @@ def CoreCalculation():
     global FilePath
     global FolderPath
 
+
+
     #Read DefaultPath and save it as FilePath
     FolderPath = top.PathEntry
     if (FolderPath == ""):
@@ -96,7 +98,7 @@ def CoreCalculation():
     LineList = ReadFromFile(None, False, FilePath).splitlines()
     HashIDReadCurrentLine = 0;
     for line in LineList:
-        print("Line: " + line)
+        #print("Line: " + line)
         if ("- HashId" in line):
             splitLine = line.split()
             CurrentHashID = int(splitLine[3], 0)
@@ -110,7 +112,7 @@ def CoreCalculation():
     LineList = ReadFromFile(None, False, FilePath).splitlines()
     HashIDReadCurrentLine = 0;
     for line in LineList:
-        print("Line: " + line)
+        #print("Line: " + line)
         if ("- HashId" in line):
             splitLine = line.split()
             CurrentHashID = int(splitLine[3], 0)
@@ -118,9 +120,9 @@ def CoreCalculation():
                 HighestHashID = CurrentHashID
         HashIDReadCurrentLine += 1;
 
-    print("HighestHashID: " + str(HighestHashID))
+    #print("HighestHashID: " + str(HighestHashID))
     HashID = str(hex(HighestHashID + 1))
-    print(HashID)
+    #print(HashID)
 
 
     X[CurrentPoint] = float(top.XEntry.get())
@@ -134,7 +136,7 @@ def CoreCalculation():
     ZSum = 0
     # Set HashId
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = str(hex(top.HashIDEntry.get()))
+        HashID = str(hex(int(top.HashIDEntry.get(), 0)))
     #Set IsClosed
     IsClosed = top.IsClosedDropdown.get()
     #Set RailType
@@ -142,7 +144,7 @@ def CoreCalculation():
     # Set NextDistanceIndex
     while NextDistanceIndexCounter < len(X)-1:
         NextDistanceIndex.append(NextDistanceIndexCounter)
-        print(NextDistanceIndexCounter)
+        #print(NextDistanceIndexCounter)
         NextDistanceIndexCounter = NextDistanceIndexCounter + 1
     # Calculate distance formula for NextDistance
     for LineNum in NextDistanceIndex:
@@ -151,7 +153,7 @@ def CoreCalculation():
     #Calculate midpoint for Translate
     while MidpointCounter < len(X)-1:
         MidpointCounter += 1
-        print("MidPointCounter: " + str(MidpointCounter))
+        #print("MidPointCounter: " + str(MidpointCounter))
         XSum += X[MidpointCounter]
         YSum += Y[MidpointCounter]
         ZSum += Z[MidpointCounter]
@@ -160,19 +162,31 @@ def CoreCalculation():
     Translate[2] = ZSum/len(Z)
 
     # Create one-time initial string + first point string
-    InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(-1) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
-    PrevDistance = str(NextDistanceArray[0])
+    FirstLastDist = math.sqrt((X[-1]-X[0])**2+(Y[-1]-Y[0])**2+(Z[-1]-Z[0])**2)
+    if (IsClosed == "true"):
+        print("yay")
+        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(FirstLastDist) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+    elif (IsClosed == "false"):
+        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(NextDistanceArray[0]) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+    else:
+        print("Please specify IsClosed!")
+        return
 
     # Create repeatable main body string
     BodyString = ""
+    PrevDistance = str(NextDistanceArray[0])
     for PointNum in range(1, len(X)-1):
         BodyString = (BodyString + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitFrame: 0.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[PointNum]) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[PointNum]) + ", " + str(Y[PointNum]) + ", " + str(Z[PointNum]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
         PrevDistance = NextDistanceArray[PointNum]
     # Create One-time end string + end point string
-    EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(-1) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
+    if (IsClosed == "true"):
+        print("yay2")
+        EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(FirstLastDist) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
+    elif (IsClosed == "false"):
+        EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(PrevDistance) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
     FinalString = (InitString + BodyString + EndString)
     clipboard.copy(FinalString)
-    print(FinalString)
+    #print(FinalString)
     ReadFromFile(FinalString, True, FilePath)
 
 
@@ -234,20 +248,24 @@ def NextPoint():
     global WindowX
     global WindowY
     global HashID
+    global IsClosed
+    global RailType
     # This isn't needed for some reason.
     global root
 
-    print(CurrentPoint + 1)
+    #print(CurrentPoint + 1)
     X[CurrentPoint] = float(top.XEntry.get())
     Y[CurrentPoint] = float(top.YEntry.get())
     Z[CurrentPoint] = float(top.ZEntry.get())
-    print(X)
-    print(Y)
-    print(Z)
+    IsClosed = top.IsClosedDropdown.get()
+    RailType = top.RailTypeDropdown.get()
+    #print(X)
+    #print(Y)
+    #print(Z)
     if (CurrentPoint < len(X)-1):
         CurrentPoint = CurrentPoint + 1
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = str(hex(top.HashIDEntry.get()))
+        HashID = str(hex(int(top.HashIDEntry.get(), 0)))
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -262,20 +280,24 @@ def PrevPoint():
     global WindowX
     global WindowY
     global HashID
+    global IsClosed
+    global RailType
     # This isn't needed for some reason.
     global root
 
-    print(CurrentPoint + 1)
+    #print(CurrentPoint + 1)
     X[CurrentPoint] = float(top.XEntry.get())
     Y[CurrentPoint] = float(top.YEntry.get())
     Z[CurrentPoint] = float(top.ZEntry.get())
-    print(X)
-    print(Y)
-    print(Z)
+    IsClosed = top.IsClosedDropdown.get()
+    RailType = top.RailTypeDropdown.get()
+    #print(X)
+    #print(Y)
+    #print(Z)
     if (CurrentPoint > 0):
         CurrentPoint = CurrentPoint - 1
     if (top.HashIDEntry.get() != "Auto"):
-        HashID = str(hex(top.HashIDEntry.get()))
+        HashID = str(hex(int(top.HashIDEntry.get(), 0)))
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -472,7 +494,7 @@ class Toplevel1:
         self.HashIDEntry.configure(takefocus="")
         self.HashIDEntry.configure(cursor="xterm")
 
-        self.HashIDEntry.insert(0, "Auto")
+        self.HashIDEntry.insert(0, HashID)
 
 
 
@@ -551,12 +573,14 @@ class Toplevel1:
         self.IsClosedValueList = ['true','false',]
         self.IsClosedDropdown.configure(values=self.IsClosedValueList)
         self.IsClosedDropdown.configure(takefocus="")
+        self.IsClosedDropdown.insert(0, IsClosed)
 
         self.RailTypeDropdown = ttk.Combobox(top)
         self.RailTypeDropdown.place(relx=0.225, rely=--0.95, relheight=0.047, relwidth=0.165)
         self.RailTypeValueList = ['Linear','Bezier',]
         self.RailTypeDropdown.configure(values=self.RailTypeValueList)
         self.RailTypeDropdown.configure(takefocus="")
+        self.RailTypeDropdown.insert(0, RailType)
 
 if __name__ == '__main__':
     vp_start_gui()
