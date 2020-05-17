@@ -68,7 +68,7 @@ def ReadFromFile(RailString, Continue, CurrentPath):
             return Output
 
 
-def CoreCalculation():
+def CoreCalculation(Continue):
     #Grab all the needed variables
     global X
     global Y
@@ -82,6 +82,7 @@ def CoreCalculation():
     global CurrentPoint
     global FilePath
     global FolderPath
+    global FinalString
 
 
 
@@ -185,11 +186,13 @@ def CoreCalculation():
     elif (IsClosed == "false"):
         EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(PrevDistance) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
     FinalString = (InitString + BodyString + EndString)
-    clipboard.copy(FinalString)
     #print(FinalString)
-    ReadFromFile(FinalString, True, FilePath)
+    ReadFromFile(FinalString, Continue, FilePath)
 
-
+def ClipboardCopy():
+    global FinalString
+    CoreCalculation(False)
+    clipboard.copy(FinalString)
 
 import sys
 
@@ -454,7 +457,7 @@ class Toplevel1:
         self.Button5.configure(activeforeground="#000000")
         self.Button5.configure(background="#0000c7")
         self.Button5.configure(borderwidth="5")
-        self.Button5.configure(command=CoreCalculation)
+        self.Button5.configure(command=lambda: CoreCalculation(True))
         self.Button5.configure(disabledforeground="#a3a3a3")
         self.Button5.configure(foreground="#000000")
         self.Button5.configure(highlightbackground="#d9d9d9")
@@ -462,6 +465,21 @@ class Toplevel1:
         self.Button5.configure(pady="0")
         self.Button5.configure(relief="flat")
         self.Button5.configure(text='''Insert Rail''')
+
+        self.Button6 = tk.Button(top)
+        self.Button6.place(relx=0.400, rely=--0.67, height=100, width=100)
+        self.Button6.configure(activebackground="#ececec")
+        self.Button6.configure(activeforeground="#000000")
+        self.Button6.configure(background="#c70000")
+        self.Button6.configure(borderwidth="5")
+        self.Button6.configure(command=ClipboardCopy)
+        self.Button6.configure(disabledforeground="#a3a3a3")
+        self.Button6.configure(foreground="#000000")
+        self.Button6.configure(highlightbackground="#d9d9d9")
+        self.Button6.configure(highlightcolor="black")
+        self.Button6.configure(pady="0")
+        self.Button6.configure(relief="flat")
+        self.Button6.configure(text='''Copy to Clipboard''')
 
 
         self.XEntry = ttk.Entry(top)
