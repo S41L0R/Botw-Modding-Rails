@@ -4,7 +4,7 @@ import math
 import oead
 import zlib
 import os
-#from tkinter import *
+from tkinter import messagebox
 #from tkinter import ttk
 
 # Set up points
@@ -37,12 +37,16 @@ FolderPath = ""
 #Set up window position
 WindowX = 587
 WindowY = 152
+#Define WriteToFile - this writes your data to the static file.
 def WriteToFile(InputText):
     InputBytes = oead.byml.from_text(InputText)
     BYML = oead.byml.to_binary(InputBytes, True, 2)
     Yaz0 = oead.yaz0.compress(BYML)
     with open(FilePath, "wb") as OutputFile:
         WrittenOutputFile = OutputFile.write(Yaz0)
+
+#Define InsertRail - This takes the unedited static file text and injects the rail into it.
+#It then calls WriteToFile.
 def InsertRail(Input, RailString):
     if (Input.find("Rails: []") == -1):
         OutputText = Input + "\n" + RailString
@@ -53,6 +57,10 @@ def InsertRail(Input, RailString):
     #clipboard.copy(OutputText)
     #print(RailString)
     WriteToFile(OutputText)
+
+#Define ReadFromFile. This reads all the data in the file and stores it as a string.
+#It then calls InsertRail, only if Continue is passed into it as true.
+#This functionality is for when you don't want to continue through, and just want to read the file.
 def ReadFromFile(RailString, Continue, CurrentPath):
     #FilePath = top.PathEntry.get()
     with open(CurrentPath, 'rb') as InputFile:
@@ -67,7 +75,7 @@ def ReadFromFile(RailString, Continue, CurrentPath):
         elif (Continue == False):
             return Output
 
-
+#This creates the railstring.
 def CoreCalculation(Continue):
     #Grab all the needed variables
     global X
@@ -87,10 +95,15 @@ def CoreCalculation(Continue):
 
 
     #Read DefaultPath and save it as FilePath
-    FolderPath = top.PathEntry
-    if (FolderPath == ""):
-        with open("DefaultPath.txt", "r") as Path:
-            FolderPath = Path.read()
+    try:
+        FolderPath = top.PathEntry
+        if (FolderPath == ""):
+            with open("DefaultPath.txt", "r") as Path:
+                FolderPath = Path.read()
+    except AttributeError:
+        messagebox.showerror("You messed up.", "You need to specify the seciton folder!")
+        print("You need to specify the seciton folder!")
+        return
     #Find new HashID
     HighestHashID = 0
     for i in os.listdir(FolderPath):
@@ -142,6 +155,11 @@ def CoreCalculation(Continue):
     IsClosed = top.IsClosedDropdown.get()
     #Set RailType
     RailType = top.RailTypeDropdown.get()
+    print(RailType)
+    if (RailType != "Bezier" and RailType != "Linear"):
+        messagebox.showerror("You messed up.", "Please specify RailType! It can only be Bezier or Linear.")
+        print("Please specify RailType! It can only be Bezier or Linear.")
+        return
     # Set NextDistanceIndex
     while NextDistanceIndexCounter < len(X)-1:
         NextDistanceIndex.append(NextDistanceIndexCounter)
@@ -170,7 +188,8 @@ def CoreCalculation(Continue):
     elif (IsClosed == "false"):
         InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(NextDistanceArray[0]) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     else:
-        print("Please specify IsClosed!")
+        messagebox.showerror("You messed up.", "Please specify IsClosed! It can only be true or false.")
+        print("Please specify IsClosed! It can only be true or false.")
         return
 
     # Create repeatable main body string
@@ -192,7 +211,10 @@ def CoreCalculation(Continue):
 def ClipboardCopy():
     global FinalString
     CoreCalculation(False)
-    clipboard.copy(FinalString)
+    try:
+        clipboard.copy(FinalString)
+    except NameError:
+        return
 
 import sys
 
