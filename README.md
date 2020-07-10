@@ -37,7 +37,7 @@ as well as the path of the map folder you want to edit.
 
 NOTE: When the "Insert Rail" button is clicked, a backup of the original static map file is saved into the "backup" folder in Botw Rails' root directory.
 
-NOTE #2: The dynamic file is never edited, and is just read to find the new HashId. Don't rename the dynamic or static files. My program searches for the "Static" and "Dynamic" in the names at the end.
+NOTE #2: The dynamic file is never edited, and is just read to find the new HashId. Don't rename the dynamic or static files. My program searches for the "Static" and "Dynamic" in the names at the end. Also, make sure to have them both. They might need to be alone in whatever directory they're in, I don't quite remember.
 
 #Important!
 Make sure to set the path to which you want to start at when selecting the file you want to edit. You can do this by editing DefaultPath.txt.
