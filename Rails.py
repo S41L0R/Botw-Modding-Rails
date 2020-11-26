@@ -37,6 +37,31 @@ FolderPath = ""
 #Set up window position
 WindowX = 587
 WindowY = 152
+
+
+
+
+# Set up paramDict
+
+paramDict = [{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0"
+},
+{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0"
+},
+{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0"
+}]
+
+
+
+
 #Define WriteToFile - this writes your data to the static file.
 def WriteToFile(InputText):
     InputBytes = oead.byml.from_text(InputText)
@@ -184,9 +209,9 @@ def CoreCalculation(Continue):
     FirstLastDist = math.sqrt((X[-1]-X[0])**2+(Y[-1]-Y[0])**2+(Z[-1]-Z[0])**2)
     if (IsClosed == "true"):
         print("yay")
-        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(FirstLastDist) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + f"  - '!Parameters': {paramDict[0]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(FirstLastDist) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     elif (IsClosed == "false"):
-        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(NextDistanceArray[0]) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + f"  - '!Parameters': {paramDict[0]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(NextDistanceArray[0]) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     else:
         messagebox.showerror("You messed up.", "Please specify IsClosed! It can only be true or false.")
         print("Please specify IsClosed! It can only be true or false.")
@@ -196,14 +221,14 @@ def CoreCalculation(Continue):
     BodyString = ""
     PrevDistance = str(NextDistanceArray[0])
     for PointNum in range(1, len(X)-1):
-        BodyString = (BodyString + "\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitFrame: 0.0}" + "\n" + "    NextDistance: " + str(NextDistanceArray[PointNum]) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[PointNum]) + ", " + str(Y[PointNum]) + ", " + str(Z[PointNum]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+        BodyString = (BodyString + "\n" + f"  - '!Parameters': {paramDict[PointNum]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[PointNum]) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[PointNum]) + ", " + str(Y[PointNum]) + ", " + str(Z[PointNum]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
         PrevDistance = NextDistanceArray[PointNum]
     # Create One-time end string + end point string
     if (IsClosed == "true"):
         print("yay2")
-        EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(FirstLastDist) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
+        EndString = ("\n" + f"  - '!Parameters': {paramDict[-1]}" + "\n" + "    NextDistance: " + str(FirstLastDist) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
     elif (IsClosed == "false"):
-        EndString = ("\n" + "  - '!Parameters': {IsAdjustPosAndDirToPoint: false, WaitASKeyName: Search, WaitFrame: 60.0}" + "\n" + "    NextDistance: " + str(PrevDistance) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
+        EndString = ("\n" + f"  - '!Parameters': {paramDict[-1]}" + "\n" + "    NextDistance: " + str(PrevDistance) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
     FinalString = (InitString + BodyString + EndString)
     #print(FinalString)
     ReadFromFile(FinalString, Continue, FilePath)
@@ -278,12 +303,38 @@ def NextPoint():
     # This isn't needed for some reason.
     global root
 
+
+    global paramDict
+    global optionsRoot
+    global optionsWindow
+
     #print(CurrentPoint + 1)
     X[CurrentPoint] = float(top.XEntry.get())
     Y[CurrentPoint] = float(top.YEntry.get())
     Z[CurrentPoint] = float(top.ZEntry.get())
     IsClosed = top.IsClosedDropdown.get()
     RailType = top.RailTypeDropdown.get()
+
+
+    try:
+        if (optionsWindow.IsAdjustPosAndDirToPoint.get() == "No Entry"):
+            del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+        else:
+            paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        if (optionsWindow.WaitASKeyName.get() == "No Entry"):
+            del paramDict[CurrentPoint]['WaitASKeyName']
+        else:
+            paramDict[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        if (optionsWindow.WaitFrame.get() == "No Entry"):
+            del paramDict[CurrentPoint]['WaitFrame']
+        else:
+            paramDict[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+    except:
+        print("You haven't set that value yet.")
+
+    print(paramDict[CurrentPoint])
     #print(X)
     #print(Y)
     #print(Z)
@@ -310,12 +361,43 @@ def PrevPoint():
     # This isn't needed for some reason.
     global root
 
+
+    global paramDict
+    global optionsRoot
+    global optionsWindow
+
     #print(CurrentPoint + 1)
     X[CurrentPoint] = float(top.XEntry.get())
     Y[CurrentPoint] = float(top.YEntry.get())
     Z[CurrentPoint] = float(top.ZEntry.get())
     IsClosed = top.IsClosedDropdown.get()
     RailType = top.RailTypeDropdown.get()
+
+
+    try:
+        if (optionsWindow.IsAdjustPosAndDirToPoint.get() == "No Entry"):
+            del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+        else:
+            paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        if (optionsWindow.WaitASKeyName.get() == "No Entry"):
+            del paramDict[CurrentPoint]['WaitASKeyName']
+        else:
+            paramDict[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        if (optionsWindow.WaitFrame.get() == "No Entry"):
+            del paramDict[CurrentPoint]['WaitFrame']
+        else:
+            paramDict[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        if (optionsWindow.Rotate.get() == "No Entry"):
+            del paramDict[CurrentPoint]['Rotate']
+        else:
+            paramDict[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
+    except:
+        print("You haven't set that value yet.")
+
+    print(paramDict[CurrentPoint])
     #print(X)
     #print(Y)
     #print(Z)
@@ -334,6 +416,11 @@ def AddPoint():
     X.append(0)
     Y.append(0)
     Z.append(0)
+    paramDict.append({
+        "IsAdjustPosAndDirToPoint": "false",
+        "WaitASKeyName": "Search",
+        "WaitFrame": "60.0"
+    })
 
 def RemovePoint():
     global X
@@ -351,6 +438,7 @@ def RemovePoint():
         X.pop()
         Y.pop()
         Z.pop()
+        paramDict.pop()
     WindowX = root.winfo_x()
     WindowY = root.winfo_y()
     top = Toplevel1 (root)
@@ -363,6 +451,17 @@ def EnterPath():
     #top.PathEntry = filedialog.askopenfilename(initialdir=FilePath, title="Select File to Modify")
     top.PathEntry = filedialog.askdirectory()
     #top.PathEntry.place(relx=0.225, rely=--0.65, relheight=0.047, relwidth=0.165)
+
+
+
+def openOptionsWindow():
+    global optionsWindow
+    global optionsRoot
+    optionsRoot = tk.Tk()
+    optionsRoot.iconbitmap('Rails.ico')
+    optionsWindow = paramLevel(optionsRoot)
+
+
 
 
 class Toplevel1:
@@ -504,6 +603,23 @@ class Toplevel1:
         self.Button6.configure(text='''Copy to Clipboard''')
 
 
+
+        self.Button7 = tk.Button(top)
+        self.Button7.place(relx=0.405, rely=--0.17, height=25, width=100)
+        self.Button7.configure(activebackground="#ececec")
+        self.Button7.configure(activeforeground="#000000")
+        self.Button7.configure(background="#c70000")
+        self.Button7.configure(borderwidth="5")
+        self.Button7.configure(command=openOptionsWindow)
+        self.Button7.configure(disabledforeground="#a3a3a3")
+        self.Button7.configure(foreground="#000000")
+        self.Button7.configure(highlightbackground="#d9d9d9")
+        self.Button7.configure(highlightcolor="black")
+        self.Button7.configure(pady="0")
+        self.Button7.configure(relief="flat")
+        self.Button7.configure(text='''Parameters''')
+
+
         self.XEntry = ttk.Entry(top)
         self.XEntry.place(relx=0.383, rely=0.356, relheight=0.047, relwidth=0.21)
 
@@ -621,6 +737,116 @@ class Toplevel1:
         self.RailTypeDropdown.configure(values=self.RailTypeValueList)
         self.RailTypeDropdown.configure(takefocus="")
         self.RailTypeDropdown.insert(0, RailType)
+
+
+class paramLevel:
+    def __init__(self, top=None):
+        '''This class configures and populates the toplevel window.
+           top is the toplevel containing window.'''
+
+        global X
+        global Y
+        global Z
+        global HashID
+        global WindowX
+        global WindowY
+
+        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _fgcolor = '#000000'  # X11 color: 'black'
+        _compcolor = '#d9d9d9' # X11 color: 'gray85'
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
+        self.style = ttk.Style()
+        if sys.platform == "win32":
+            self.style.theme_use('winnative')
+        self.style.configure('.',background=_bgcolor)
+        self.style.configure('.',foreground=_fgcolor)
+        self.style.configure('.',font="TkDefaultFont")
+        self.style.map('.',background=
+            [('selected', _compcolor), ('active',_ana2color)])
+
+        top.geometry("600x450+"+str(WindowX)+"+"+str(WindowY))
+        top.minsize(120, 1)
+        top.maxsize(1684, 1031)
+        top.resizable(1, 1)
+        top.title("Parameters")
+        top.configure(background="#d9d9d9")
+        top.configure(cursor="arrow")
+
+        self.IsAdjustPosAndDirToPointLabel = ttk.Label(top)
+        self.IsAdjustPosAndDirToPointLabel.place(relx=0, rely=0, height=19, width=150)
+        self.IsAdjustPosAndDirToPointLabel.configure(background="#d9d9d9")
+        self.IsAdjustPosAndDirToPointLabel.configure(foreground="#000000")
+        self.IsAdjustPosAndDirToPointLabel.configure(font="TkDefaultFont")
+        self.IsAdjustPosAndDirToPointLabel.configure(relief="flat")
+        self.IsAdjustPosAndDirToPointLabel.configure(anchor='center')
+        self.IsAdjustPosAndDirToPointLabel.configure(justify='center')
+        self.IsAdjustPosAndDirToPointLabel.configure(text='''IsAdjustPosAndDirToPoint''')
+
+
+        self.IsAdjustPosAndDirToPoint = ttk.Combobox(top)
+        self.IsAdjustPosAndDirToPoint.place(relx=0.25, rely=--0, relheight=0.047, relwidth=0.165)
+        self.IsAdjustPosAndDirToPointValueList = ['true','false', 'No Entry',]
+        self.IsAdjustPosAndDirToPoint.configure(values=self.IsAdjustPosAndDirToPointValueList)
+        self.IsAdjustPosAndDirToPoint.configure(takefocus="")
+        self.IsAdjustPosAndDirToPoint.insert(0, "false")
+
+
+        self.WaitASKeyNameLabel = ttk.Label(top)
+        self.WaitASKeyNameLabel.place(relx=0, rely=0.05, height=19, width=150)
+        self.WaitASKeyNameLabel.configure(background="#d9d9d9")
+        self.WaitASKeyNameLabel.configure(foreground="#000000")
+        self.WaitASKeyNameLabel.configure(font="TkDefaultFont")
+        self.WaitASKeyNameLabel.configure(relief="flat")
+        self.WaitASKeyNameLabel.configure(anchor='center')
+        self.WaitASKeyNameLabel.configure(justify='center')
+        self.WaitASKeyNameLabel.configure(text='''WaitASKeyName''')
+
+
+        self.WaitASKeyName = ttk.Combobox(top)
+        self.WaitASKeyName.place(relx=0.25, rely=--0.05, relheight=0.047, relwidth=0.165)
+        self.WaitASKeyNameValueList = ['Search','No Entry',]
+        self.WaitASKeyName.configure(values=self.WaitASKeyNameValueList)
+        self.WaitASKeyName.configure(takefocus="")
+        self.WaitASKeyName.insert(0, "Search")
+
+
+        self.WaitFrameLabel = ttk.Label(top)
+        self.WaitFrameLabel.place(relx=0, rely=0.1, height=19, width=150)
+        self.WaitFrameLabel.configure(background="#d9d9d9")
+        self.WaitFrameLabel.configure(foreground="#000000")
+        self.WaitFrameLabel.configure(font="TkDefaultFont")
+        self.WaitFrameLabel.configure(relief="flat")
+        self.WaitFrameLabel.configure(anchor='center')
+        self.WaitFrameLabel.configure(justify='center')
+        self.WaitFrameLabel.configure(text='''WaitFrame''')
+
+
+        self.WaitFrame = ttk.Combobox(top)
+        self.WaitFrame.place(relx=0.25, rely=--0.1, relheight=0.047, relwidth=0.165)
+        self.WaitFrameValueList = ['60.0','No Entry',]
+        self.WaitFrame.configure(values=self.WaitASKeyNameValueList)
+        self.WaitFrame.configure(takefocus="")
+        self.WaitFrame.insert(0, "60.0")
+
+
+        self.RotateLabel = ttk.Label(top)
+        self.RotateLabel.place(relx=0, rely=0.15, height=19, width=150)
+        self.RotateLabel.configure(background="#d9d9d9")
+        self.RotateLabel.configure(foreground="#000000")
+        self.RotateLabel.configure(font="TkDefaultFont")
+        self.RotateLabel.configure(relief="flat")
+        self.RotateLabel.configure(anchor='center')
+        self.RotateLabel.configure(justify='center')
+        self.RotateLabel.configure(text='''Rotate''')
+
+
+        self.Rotate = ttk.Combobox(top)
+        self.Rotate.place(relx=0.25, rely=--0.15, relheight=0.047, relwidth=0.165)
+        self.RotateValueList = ['90.0','No Entry',]
+        self.Rotate.configure(values=self.RotateValueList)
+        self.Rotate.configure(takefocus="")
+        self.Rotate.insert(0, "90.0")
 
 if __name__ == '__main__':
     vp_start_gui()
