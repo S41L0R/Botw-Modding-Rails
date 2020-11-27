@@ -8,9 +8,15 @@ from tkinter import messagebox
 #from tkinter import ttk
 
 # Set up points
-X = [1.0, 3.0, 2.0]
-Y = [1.0, 7.0, 15.0]
-Z = [1.0, 5.0, 4.0]
+#X = [1.0, 3.0, 2.0]
+#Y = [1.0, 7.0, 15.0]
+#Z = [1.0, 5.0, 4.0]
+
+
+
+X = [1.0]
+Y = [1.0]
+Z = [1.0]
 
 # Set up HashID
 HashID = "Auto"
@@ -46,17 +52,40 @@ WindowY = 152
 paramDict = [{
     "IsAdjustPosAndDirToPoint": "false",
     "WaitASKeyName": "Search",
-    "WaitFrame": "60.0"
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
 },
 {
     "IsAdjustPosAndDirToPoint": "false",
     "WaitASKeyName": "Search",
-    "WaitFrame": "60.0"
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
 },
 {
     "IsAdjustPosAndDirToPoint": "false",
     "WaitASKeyName": "Search",
-    "WaitFrame": "60.0"
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
+}]
+
+
+paramDictForTkinter = [{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
+},
+{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
+},
+{
+    "IsAdjustPosAndDirToPoint": "false",
+    "WaitASKeyName": "Search",
+    "WaitFrame": "60.0",
+    "Rotate": "90.0"
 }]
 
 
@@ -72,9 +101,17 @@ def WriteToFile(InputText):
 
 #Define InsertRail - This takes the unedited static file text and injects the rail into it.
 #It then calls WriteToFile.
-def InsertRail(Input, RailString):
+def InsertRail(Input, RailString, hashId):
     if (Input.find("Rails: []") == -1):
-        OutputText = Input + "\n" + RailString
+        railStart = Input.find(f"- HashID: !u {hashId}")
+        railEnd = Input.find(f"Guide", railStart)
+        while (Input[railEnd+1] == "P"):
+            railEnd = Input.find(f"Guide", railEnd)
+        if (railStart == -1):
+            OutputText = Input + "\n" + RailString
+        else:
+            Input = Input[0:railStart] + Input[railEnd:-1]
+            Input = Input[:railStart] + RailString + Input[railStart:]
     else:
         OutputText = Input + "Rails:" + "\n" + RailString
 
@@ -86,7 +123,7 @@ def InsertRail(Input, RailString):
 #Define ReadFromFile. This reads all the data in the file and stores it as a string.
 #It then calls InsertRail, only if Continue is passed into it as true.
 #This functionality is for when you don't want to continue through, and just want to read the file.
-def ReadFromFile(RailString, Continue, CurrentPath):
+def ReadFromFile(RailString, Continue, CurrentPath, hashId):
     #FilePath = top.PathEntry.get()
     with open(CurrentPath, 'rb') as InputFile:
         ReadInputFile = InputFile.read()
@@ -94,7 +131,7 @@ def ReadFromFile(RailString, Continue, CurrentPath):
         DeBYML = oead.byml.from_binary(DeYaz0)
         Output = oead.byml.to_text(DeBYML)
         if (Continue == True):
-            InsertRail(Output, RailString)
+            InsertRail(Output, RailString, hashId)
             with open("backup/backup.smubin", 'wb') as BackupFile:
                 BackupFile.write(ReadInputFile)
         elif (Continue == False):
@@ -134,7 +171,7 @@ def CoreCalculation(Continue):
     for i in os.listdir(FolderPath):
         if os.path.isfile(os.path.join(FolderPath,i)) and 'Dynamic' in i:
             FilePath = FolderPath + "//" + i
-    LineList = ReadFromFile(None, False, FilePath).splitlines()
+    LineList = ReadFromFile(None, False, FilePath, None).splitlines()
     HashIDReadCurrentLine = 0;
     for line in LineList:
         #print("Line: " + line)
@@ -148,7 +185,7 @@ def CoreCalculation(Continue):
     for i in os.listdir(FolderPath):
         if os.path.isfile(os.path.join(FolderPath,i)) and 'Static' in i:
             FilePath = FolderPath + "//" + i
-    LineList = ReadFromFile(None, False, FilePath).splitlines()
+    LineList = ReadFromFile(None, False, FilePath, None).splitlines()
     HashIDReadCurrentLine = 0;
     for line in LineList:
         #print("Line: " + line)
@@ -211,7 +248,7 @@ def CoreCalculation(Continue):
         print("yay")
         InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + f"  - '!Parameters': {paramDict[0]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(FirstLastDist) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     elif (IsClosed == "false"):
-        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + f"  - '!Parameters': {paramDict[0]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + str(NextDistanceArray[0]) + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
+        InitString = ("- HashId: !u " + HashID + "\n" + "  IsClosed: " + str(IsClosed) + "\n" + "  RailPoints:" + "\n" + f"  - '!Parameters': {paramDict[0]}" + "\n" + "    NextDistance: " + str(NextDistanceArray[0]) + "\n" + "    PrevDistance: " + "0.0" + "\n" + "    Translate: " + "[" + str(X[0]) + ", " + str(Y[0]) + ", " + str(Z[0]) + "]" + "\n" + "    UnitConfigName: GuidePoint")
     else:
         messagebox.showerror("You messed up.", "Please specify IsClosed! It can only be true or false.")
         print("Please specify IsClosed! It can only be true or false.")
@@ -231,7 +268,7 @@ def CoreCalculation(Continue):
         EndString = ("\n" + f"  - '!Parameters': {paramDict[-1]}" + "\n" + "    NextDistance: " + str(PrevDistance) + "\n" + "    PrevDistance: " + str(PrevDistance) + "\n" + "    Translate: " + "[" + str(X[-1]) + ", " + str(Y[-1]) + ", " + str(Z[-1]) + "]" + "\n" + "    UnitConfigName: GuidePoint" + "\n" + "  RailType: " + RailType + "\n" + "  Translate: " + str(Translate) + "\n" + "  UnitConfigName: Guide")
     FinalString = (InitString + BodyString + EndString)
     #print(FinalString)
-    ReadFromFile(FinalString, Continue, FilePath)
+    ReadFromFile(FinalString, Continue, FilePath, HashID)
 
 def ClipboardCopy():
     global FinalString
@@ -318,21 +355,50 @@ def NextPoint():
 
     try:
         if (optionsWindow.IsAdjustPosAndDirToPoint.get() == "No Entry"):
-            del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+            try:
+                del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
 
         if (optionsWindow.WaitASKeyName.get() == "No Entry"):
-            del paramDict[CurrentPoint]['WaitASKeyName']
+            try:
+                del paramDict[CurrentPoint]['WaitASKeyName']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
 
         if (optionsWindow.WaitFrame.get() == "No Entry"):
-            del paramDict[CurrentPoint]['WaitFrame']
+            try:
+                del paramDict[CurrentPoint]['WaitFrame']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        if (optionsWindow.Rotate.get() == "No Entry"):
+            try:
+                del paramDict[CurrentPoint]['Rotate']
+            except:
+                print("Already no entry, continuing.")
+        else:
+            paramDict[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
     except:
-        print("You haven't set that value yet.")
+        print("Parameters not changed.")
+
+
+    try:
+        paramDictForTkinter[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        paramDictForTkinter[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
+    except:
+        print("Parameters not changed.")
 
     print(paramDict[CurrentPoint])
     #print(X)
@@ -376,26 +442,50 @@ def PrevPoint():
 
     try:
         if (optionsWindow.IsAdjustPosAndDirToPoint.get() == "No Entry"):
-            del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+            try:
+                del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
 
         if (optionsWindow.WaitASKeyName.get() == "No Entry"):
-            del paramDict[CurrentPoint]['WaitASKeyName']
+            try:
+                del paramDict[CurrentPoint]['WaitASKeyName']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
 
         if (optionsWindow.WaitFrame.get() == "No Entry"):
-            del paramDict[CurrentPoint]['WaitFrame']
+            try:
+                del paramDict[CurrentPoint]['WaitFrame']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
 
         if (optionsWindow.Rotate.get() == "No Entry"):
-            del paramDict[CurrentPoint]['Rotate']
+            try:
+                del paramDict[CurrentPoint]['Rotate']
+            except:
+                print("Already no entry, continuing.")
         else:
             paramDict[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
     except:
-        print("You haven't set that value yet.")
+        print("Parameters not changed.")
+
+
+    try:
+        paramDictForTkinter[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        paramDictForTkinter[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
+    except:
+        print("Parameters not changed.")
 
     print(paramDict[CurrentPoint])
     #print(X)
@@ -413,9 +503,10 @@ def AddPoint():
     global X
     global Y
     global Z
-    X.append(0)
-    Y.append(0)
-    Z.append(0)
+    global CurrentPoint
+    X.append(X[CurrentPoint-1])
+    Y.append(Y[CurrentPoint-1])
+    Z.append(Z[CurrentPoint-1])
     paramDict.append({
         "IsAdjustPosAndDirToPoint": "false",
         "WaitASKeyName": "Search",
@@ -432,7 +523,7 @@ def RemovePoint():
     # This isn't needed for some reason.
     global root
 
-    if len(X) > 2:
+    if len(X) > 1:
         if CurrentPoint >= len(X)-1:
             CurrentPoint = len(X)-2
         X.pop()
@@ -452,6 +543,59 @@ def EnterPath():
     top.PathEntry = filedialog.askdirectory()
     #top.PathEntry.place(relx=0.225, rely=--0.65, relheight=0.047, relwidth=0.165)
 
+def on_paramClosing():
+    global optionsRoot
+    global CurrentPoint
+    try:
+        if (optionsWindow.IsAdjustPosAndDirToPoint.get() == "No Entry"):
+            try:
+                del paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint']
+            except:
+                print("Already no entry, continuing.")
+        else:
+            paramDict[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        if (optionsWindow.WaitASKeyName.get() == "No Entry"):
+            try:
+                del paramDict[CurrentPoint]['WaitASKeyName']
+            except:
+                print("Already no entry, continuing.")
+        else:
+            paramDict[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        if (optionsWindow.WaitFrame.get() == "No Entry"):
+            try:
+                del paramDict[CurrentPoint]['WaitFrame']
+            except:
+                print("Already no entry, continuing.")
+        else:
+            paramDict[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        if (optionsWindow.Rotate.get() == "No Entry"):
+            try:
+                del paramDict[CurrentPoint]['Rotate']
+            except:
+                print("Already no entry, continuing.")
+        else:
+            paramDict[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
+    except:
+        print("Parameters not changed.")
+
+
+    try:
+        paramDictForTkinter[CurrentPoint]['IsAdjustPosAndDirToPoint'] = optionsWindow.IsAdjustPosAndDirToPoint.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitASKeyName'] = optionsWindow.WaitASKeyName.get()
+
+        paramDictForTkinter[CurrentPoint]['WaitFrame'] = optionsWindow.WaitFrame.get()
+
+        paramDictForTkinter[CurrentPoint]['Rotate'] = optionsWindow.Rotate.get()
+    except:
+        print("Parameters not changed.")
+
+    print(paramDict[CurrentPoint])
+    optionsRoot.destroy()
+
 
 
 def openOptionsWindow():
@@ -460,6 +604,7 @@ def openOptionsWindow():
     optionsRoot = tk.Tk()
     optionsRoot.iconbitmap('Rails.ico')
     optionsWindow = paramLevel(optionsRoot)
+    optionsRoot.protocol("WM_DELETE_WINDOW", on_paramClosing)
 
 
 
@@ -789,7 +934,7 @@ class paramLevel:
         self.IsAdjustPosAndDirToPointValueList = ['true','false', 'No Entry',]
         self.IsAdjustPosAndDirToPoint.configure(values=self.IsAdjustPosAndDirToPointValueList)
         self.IsAdjustPosAndDirToPoint.configure(takefocus="")
-        self.IsAdjustPosAndDirToPoint.insert(0, "false")
+        self.IsAdjustPosAndDirToPoint.insert(0, paramDictForTkinter[CurrentPoint]['IsAdjustPosAndDirToPoint'])
 
 
         self.WaitASKeyNameLabel = ttk.Label(top)
@@ -808,7 +953,7 @@ class paramLevel:
         self.WaitASKeyNameValueList = ['Search','No Entry',]
         self.WaitASKeyName.configure(values=self.WaitASKeyNameValueList)
         self.WaitASKeyName.configure(takefocus="")
-        self.WaitASKeyName.insert(0, "Search")
+        self.WaitASKeyName.insert(0, paramDictForTkinter[CurrentPoint]['WaitASKeyName'])
 
 
         self.WaitFrameLabel = ttk.Label(top)
@@ -825,9 +970,9 @@ class paramLevel:
         self.WaitFrame = ttk.Combobox(top)
         self.WaitFrame.place(relx=0.25, rely=--0.1, relheight=0.047, relwidth=0.165)
         self.WaitFrameValueList = ['60.0','No Entry',]
-        self.WaitFrame.configure(values=self.WaitASKeyNameValueList)
+        self.WaitFrame.configure(values=self.WaitFrameValueList)
         self.WaitFrame.configure(takefocus="")
-        self.WaitFrame.insert(0, "60.0")
+        self.WaitFrame.insert(0, paramDictForTkinter[CurrentPoint]['WaitFrame'])
 
 
         self.RotateLabel = ttk.Label(top)
@@ -846,7 +991,8 @@ class paramLevel:
         self.RotateValueList = ['90.0','No Entry',]
         self.Rotate.configure(values=self.RotateValueList)
         self.Rotate.configure(takefocus="")
-        self.Rotate.insert(0, "90.0")
+        self.Rotate.insert(0, paramDictForTkinter[CurrentPoint]['Rotate'])
+
 
 if __name__ == '__main__':
     vp_start_gui()
