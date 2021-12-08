@@ -1,5 +1,7 @@
 # BotW Rails
 
+(This project is archived, but it's still usable. It's just not going to get updates.)
+
 ## Installation
 -------------
 
@@ -42,11 +44,4 @@ NOTE #2: The dynamic file is never edited, and is just read to find the new Hash
 #Important!
 Make sure to set the path to which you want to start at when selecting the file you want to edit. You can do this by editing DefaultPath.txt.
 
-BUGFIXES COMING SOON!
-
-Then...
-
-TUTORIAL VIDEO COMING SOON!
-
-
-If there are any bugs you can contact me at my discord, Greenlord#9262. I am on the botw modding hub if you want to ping me.
+If you need any help with the tool, you can contact me via discord: Greenlord#9262. I'm also on the botw modding hub as well as the tool research hub if you want to ping me.
